@@ -827,20 +827,20 @@ def main():
     print("\n")
 
     # Split the file
-    con.rule("[cyan]Chapterize File[/cyan]")
-    print("\n")
-    split_file(audiobook_file, timecodes, parsed_metadata, cover_art)
+    #con.rule("[cyan]Chapterize File[/cyan]")
+    #print("\n")
+    #split_file(audiobook_file, timecodes, parsed_metadata, cover_art)
 
     # Count the generated files and compare to timecode dict
-    file_count = (sum(1 for x in audiobook_file.parent.glob('*.mp3') if x.stem != audiobook_file.stem))
-    expected = len(timecodes)
-    if file_count >= expected:
-        con.print(f"[bold green]SUCCESS![/] Audiobook split into {file_count} files\n")
-    else:
-        con.print(
-            f"[bold yellow]WARNING:[/] {file_count} files were generated "
-            f"which is less than the expected {expected}\n"
-        )
+    #file_count = (sum(1 for x in audiobook_file.parent.glob('*.m4b') if x.stem != audiobook_file.stem))
+    #expected = len(timecodes)
+    #if file_count >= expected:
+    #    con.print(f"[bold green]SUCCESS![/] Audiobook split into {file_count} files\n")
+    #else:
+    #    con.print(
+    #        f"[bold yellow]WARNING:[/] {file_count} files were generated "
+    #        f"which is less than the expected {expected}\n"
+    #    )
 
 
 if __name__ == '__main__':
