@@ -182,7 +182,7 @@ def parse_args():
 
     parser = argparse.ArgumentParser(
         description='''
-        Splits a single monolithic mp3 audiobook file into multiple chapter files using Machine Learning. 
+        Splits a single monolithic m4b audiobook file into multiple chapter files using Machine Learning.
         Metadata and cover art are also extracted from the source file, but any user supplied values
         automatically take precedence when conflicts arise.
         '''
@@ -394,7 +394,7 @@ def extract_coverart(audiobook: str | Path) -> str | Path | None:
     :return: Path to cover art jpg file if found, otherwise None
     """
 
-    covert_art = str(audiobook).replace('.mp3', '.jpg')
+    covert_art = str(audiobook).replace('.m4b', '.jpg')
     subprocess.run([str(ffmpeg), '-y', '-loglevel', 'quiet', '-i',
                     audiobook, '-an', '-c:v', 'copy', covert_art])
     if Path(covert_art).exists() and Path(covert_art).stat().st_size > 10:
@@ -412,11 +412,11 @@ def convert_to_wav(file: str | Path) -> Path:
     Convert input file to lossless wav format. Currently unused, but might be useful for
     legacy versions of vosk.
 
-    :param file: Input .mp3 file to convert
+    :param file: Input .m4b file to convert
     :return: Path to .wav file
     """
 
-    wav_file = str(file).replace('.mp3', '.wav')
+    wav_file = str(file).replace('.m4b', '.wav')
     con.print("[magenta]Converting file to wav...[/]")
     result = subprocess.run([
         str(ffmpeg), '-i', file, '-ar', '16000', '-ac', '1', wav_file
@@ -535,9 +535,9 @@ def convert_time(time: str) -> str:
 
 def split_file(audiobook: str | Path, timecodes: list[dict],
                metadata: dict, cover_art: Optional[str]) -> None:
-    """Splits a single .mp3 file into chapterized segments.
+    """Splits a single .m4b file into chapterized segments.
 
-    :param audiobook: Path to original .mp3 audiobook
+    :param audiobook: Path to original .m4b audiobook
     :param timecodes: List of start/end markers for each chapter
     :param metadata: File metadata passed via CLI and/or parsed from audiobook file
     :param cover_art: Optional path to cover art
@@ -590,9 +590,9 @@ def split_file(audiobook: str | Path, timecodes: list[dict],
             if 'end' in times:
                 command_copy[7:7] = ['-to', times['end']]
             if 'chapter_type' in times:
-                file_path = audiobook.parent.joinpath(f"{file_stem} {counter} - {times['chapter_type']}.mp3")
+                file_path = audiobook.parent.joinpath(f"{file_stem} {counter} - {times['chapter_type']}.m4b")
             else:
-                file_path = audiobook.parent.joinpath(f"{file_stem} - {counter}.mp3")
+                file_path = audiobook.parent.joinpath(f"{file_stem} - {counter}.m4b")
 
             track_num = ['-metadata', f"track={counter}/{len(timecodes)}"]
             command_copy.extend([*stream, *track_num, '-metadata', f"title={times['chapter_type']}",
@@ -628,7 +628,7 @@ def generate_timecodes(audiobook: str | Path, language: str, model_type: str) ->
     model_root = Path(r"model")
 
     # If the timecode file already exists, exit early and return path
-    out_file = str(audiobook).replace('.mp3', '.srt')
+    out_file = str(audiobook).replace('.m4b', '.srt')
     if Path(out_file).exists() and Path(out_file).stat().st_size > 10:
         con.print("[bold green]SUCCESS![/] An existing timecode file was found")
         print("\n")
@@ -758,8 +758,8 @@ def main():
 
     # Destructure tuple
     audiobook_file, in_metadata, lang, model_name, model_type = parse_args()
-    if not str(audiobook_file).endswith('.mp3'):
-        con.print("[bold red]ERROR:[/] The script only works with .mp3 files (for now)")
+    if not str(audiobook_file).endswith('.m4b'):
+        con.print("[bold red]ERROR:[/] The script only works with .m4b files (for now)")
         sys.exit(9)
 
     # Extract metadata from input file
@@ -805,7 +805,7 @@ def main():
         print("\n")
         download_model(model_name)
 
-    # Generate timecodes from mp3 file
+    # Generate timecodes from m4b file
     con.rule("[cyan]Generate Timecodes[/cyan]")
     print("\n")
     if model_type == 'small':
