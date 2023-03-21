@@ -353,6 +353,30 @@ def print_table(list_dicts: list[dict]) -> None:
 
     con.print(table)
 
+def print_chapters(list_dicts: list[dict], audiobook_file: str) -> None:
+    """Formats a list of dictionaries into a QuickTime chapters file with a 1 second gap before each chapter start.
+
+    :param list_dicts: List of dictionaries to format
+    :param audiobook_file: path of audiobook being processed
+    :return: None
+    """
+    out_file = audiobook_file.replace(".m4b", ".chapters.txt")
+
+    con.print("\n[bold magenta]QuickTime Chapters[/]")
+
+    firstItem = True
+    with open(out_file, 'w') as file:
+        for item in list_dicts:
+            chapter = ""
+            if (firstItem):
+                chapter = f"{item['start']} {item['chapter_type']}"
+                firstItem = False
+            else:
+                chapter = f"{convert_time(item['start'])} {item['chapter_type']}"
+
+            con.print(chapter)
+            file.write(f"{chapter}\n")
+
 
 def extract_metadata(audiobook: str | Path) -> dict:
     """Extracts existing metadata from the input file.
@@ -695,6 +719,8 @@ def parse_timecodes(content: list) -> list[dict]:
     timecodes = []
     counter = 1
 
+    timecodes.append({'start': '00:00:00.000', 'chapter_type': "Opening Credits"})
+
     for i, line in enumerate(content):
         if (
                 # Not the end of the list
@@ -721,7 +747,7 @@ def parse_timecodes(content: list) -> list[dict]:
 
                 # Build dict with start codes and marker
                 if len(timecodes) == 0:
-                    time_dict = {'start': '00:00:00', 'chapter_type': chapter_type}
+                    time_dict = {'start': '00:00:00.000', 'chapter_type': chapter_type}
                 else:
                     time_dict = {'start': start, 'chapter_type': chapter_type}
                 timecodes.append(time_dict)
@@ -824,6 +850,7 @@ def main():
     con.print("[bold green]SUCCESS![/] Timecodes parsed")
     print("\n")
     print_table(timecodes)
+    print_chapters(timecodes, str(audiobook_file))
     print("\n")
 
     # Split the file
